@@ -1,27 +1,32 @@
-def ft_achivement_tracker() -> None:
-    print("=== Achivement Tracker System ===\n")
-    players= [
-    {"name": "alice", "achivements": {"first_kill", "level_10", "treasure_hunter", "speed_demon"}},
-    {"name": "bob", "achivements": {"first_kill", "level_10", "boss_slayer", "collector"}},
-    {"name": "charlie", "achivements": {"level_10", "treasure_hunter", "boss_slayer", "speed_demon", "perfectionist"}}
-    ]
-    for player in players:
-        print(f"Player {player['name']}, achivements: {player['achivements']}")
-  
+def ft_achievement_tracker() -> None:
+    print("=== Achievement Tracker System ===\n")
+    alice_achievements = {'first_kill', 'level_10', 'treasure_hunter', 'speed_demon'}
+    bob_achievements = {'first_kill', 'level_10', 'boss_slayer', 'collector'}
+    charlie_achievements = {'level_10', 'treasure_hunter', 'boss_slayer', 'speed_demon', 'perfectionist'}
+    
+    print(f"Player alice achievements: {alice_achievements}")
+    print(f"Player bob achievements: {bob_achievements}")
+    print(f"Player charlie achievements: {charlie_achievements}")
+    
     print("\n=== Achievement Analytics ===")
 
-    all_unique_achivements = set()
+    unique_achievements:set[str] = alice_achievements | bob_achievements | charlie_achievements
 
-    for player in players:
-        all_unique_achivements |= player["achivements"]
-
-    print(f"All unique achivements: {all_unique_achivements}")
-    print(f"Total unique achivements: {len(all_unique_achivements)}")
+    print(f"All unique achievements: {unique_achievements}")
+    print(f"Total unique achievements: {len(unique_achievements)}")
     
-    common_all_players = players[0]["achivements"]
+    common_achievements:set[str] = alice_achievements & bob_achievements & charlie_achievements
 
-    for player in players[1:]:
-        common_all_players &= player["achivements"]
-    print(f"Common to all players: {common_all_players}")
+    print(f"\nCommon to all players: {common_achievements}")
+    
+    rare_charlie:set[str]= charlie_achievements - bob_achievements - alice_achievements
+    rare_bob:set[str] = bob_achievements - charlie_achievements - alice_achievements
+    rare_achievements:set[str] = rare_charlie | rare_bob
+
+    print(f"Rare achievements: {rare_achievements}")
+
+    print(f"\nAlice vs Bob common: {alice_achievements & bob_achievements}")
+    print(f"Alice unique: {alice_achievements - bob_achievements}")
+    print(f"Bob unique: {bob_achievements - alice_achievements}")
 if __name__ == "__main__":
-       ft_achivement_tracker()
+    ft_achievement_tracker()
