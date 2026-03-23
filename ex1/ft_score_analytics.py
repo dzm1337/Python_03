@@ -13,7 +13,13 @@ def score_parser(scores: list) -> bool:
         for arg in argv[1:]:
             scores.append(int(arg))
     except ValueError:
-        print(f"Error: {arg} is not a valid number!")
+        for arg in argv[1:]:
+            if type(arg) is not int:
+                print(f"Invalid parameter: '{arg}'")
+        print(
+            f"No scores provided. Usage: python3 {argv[0]} "
+            f"<score1> <score2> ..."
+        )
         return False
     return True
 

@@ -1,15 +1,16 @@
 from math import sqrt
 
 
-def tuple_parser(tuples) -> bool:
+def tuple_parser(data: str):
     try:
-        for x in tuples:
-            int(x)
-    except ValueError as e:
-        print(f"Error parsing coordinates: {e}'")
-        print(f"Error details - Type: {type(e).__name__}, Args: {e.args}")
-        return False
-    return True
+        parts = data.split(",")
+        if len(parts) != 3:
+            raise ValueError("Expected 3 values")
+        result = (float(parts[0]), float(parts[1]), float(parts[2]))
+        return result
+    except ValueError:
+        print("Invalid Syntax")
+        return
 
 
 def dist(p1, p2):
@@ -21,37 +22,16 @@ def dist(p1, p2):
 def calculate_coordinates():
     print("=== Game Coordinate System ===")
 
-    origin = (0, 0, 0)
-    position = (10, 20, 0)
+    origin = (0.0, 0.0, 0.0)
+    user_input = input("Enter new coordinates as floats in format 'x,y,z': ")
+    position = tuple_parser(user_input)
 
-    if tuple_parser(origin) and tuple_parser(position):
+    if position is not None:
+        (x, y, z) = position
         distance = dist(origin, position)
-        print(f"\nPosition Created: {position}")
-        print(
-            f"The distance between {origin} and "
-            f"{position}: {distance:.2f}"
-        )
-
-    position = (3, 4, 0)
-    (x, y, z) = position
-    print(f'\nParsing Coordinates "{x},{y},{z}"')
-
-    if tuple_parser(position):
-        distance = dist(origin, position)
-        print(f"Parsed Position: {position}")
-        print(
-            f"The distance between {origin} and "
-            f"{position}: {distance:.2f}"
-        )
-
-    invalid_pos = ("abc", "def", "ghi")
-    (a, b, c) = invalid_pos
-    print(f'\nParsing invalid coordinates: "{a}","{b}","{c}"')
-    tuple_parser(invalid_pos)
-
-    print("\nUnpacking Demonstration")
-    print(f"Player at x={x}, y={y}, z={z}")
-    print(f"Coordinates: X={x}, Y={y}, Z={z}")
+        print(f"\nGot a first tuple: {position}")
+        print(f"It includes X={x}, Y={y}, Z={z}")
+        print(f"Distance to the center: {distance:.4f}")
 
 
 if __name__ == "__main__":
