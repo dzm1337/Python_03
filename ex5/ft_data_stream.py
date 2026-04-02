@@ -1,121 +1,44 @@
-from typing import Generator
+import random
+import typing
 
 
-def game_events() -> Generator[dict, None, None]:
-    players = ["alice", "bob", "charlie", "thijs", "abdou", "omar", "arthur"]
-    levels = [5, 12, 8, 535, 32, 64, 53, 52]
+def gen_event() -> typing.Generator:
+    players = ["alice", "bob", "charlie", "dylan"]
     actions = [
-        "killed monster",
-        "found treasure",
-        "leveled up",
-        "completed quest",
-        "crafted weapon",
-        "joined guild",
-        "won battle",
+        "run", "eat", "sleep", "grab", "move",
+        "climb", "swim", "use", "release"
     ]
-    event_id = 1
-    i = 0
-
-    while event_id <= 1000:
-        yield {
-            "id": event_id,
-            "player": players[i % len(players)],
-            "level": levels[i % len(levels)],
-            "action": actions[i % len(actions)],
-        }
-        event_id += 1
-        i += 1
+    while True:
+        name = random.choice(players)
+        action = random.choice(actions)
+        yield (name, action)
 
 
-def high_level_events(
-    events: Generator[dict, None, None]
-) -> Generator[dict, None, None]:
-    for event in events:
-        if event["level"] >= 10:
-            yield event
-
-
-def fibonnaci(n: int) -> Generator[int, None, None]:
-    count = 0
-    first = 0
-    second = 1
-
-    while count < n:
-        yield first
-        next_value = first + second
-        first = second
-        second = next_value
-        count += 1
-
-
-def prime(n: int) -> Generator[int, None, None]:
-    found = 0
-    candidate = 2
-
-    while found < n:
-        divisor = 2
-        is_prime = True
-
-        while divisor < candidate:
-            if candidate % divisor == 0:
-                is_prime = False
-                break
-            divisor += 1
-
-        if is_prime:
-            yield candidate
-            found += 1
-
-        candidate += 1
-
-
-def main():
-    print("=== Game Data Stream Processor ===")
-    print("Processing 1000 game events...")
-    print(" ")
-
-    total = 0
-    high_level = 0
-    treasure = 0
-    levelup = 0
-
-    for event in game_events():
-        total += 1
-
-        if total <= 7:
-            print(
-                f"Event {event['id']}: Player {event['player']} "
-                f"(level {event['level']}) {event['action']}"
-            )
-
-        if event["level"] >= 10:
-            high_level += 1
-        if event["action"] == "found treasure":
-            treasure += 1
-        elif event["action"] == "leveled up":
-            levelup += 1
-
-    print("...")
-    print("\n=== Stream Analytics ===")
-    print(f"Total events processed: {total}")
-    print(f"High-level players (10+): {high_level}")
-    print(f"Treasure events: {treasure + 40}")
-    print(f"Level-up events: {levelup + 98}")
-    print("\nMemory usage: Constant (streaming)")
-    print("Processing time: 0.045 seconds")
-
-    print("\n=== Generator Demonstration ===")
-
-    fibonnaci_list = []
-    for number in fibonnaci(10):
-        fibonnaci_list.append(str(number))
-    print(f"Fibonnaci sequence (first 10): {', '.join(fibonnaci_list)}")
-
-    prime_list = []
-    for number in prime(5):
-        prime_list.append(str(number))
-    print(f"Prime numbers (first 5): {', '.join(prime_list)}")
+def consume_event(event_list: list) -> typing.Generator:
+    while event_list:
+        idx = random.randrange(len(event_list))
+        event = event_list.pop(idx)
+        yield event
 
 
 if __name__ == "__main__":
-    main()
+    print("=== Game Data Stream Processor ===")
+
+    stream = gen_event()
+
+    for i in range(1000):
+        name, action = next(stream)
+        print(f"Event {i}: Player {name} did action {action}")
+
+    event_list = []
+    stream = gen_event()
+    for _ in range(10):
+        event_list.append(next(stream))
+
+    print(f"Built list of 10 events: {event_list}")
+
+    consumer = consume_event(event_list)
+    for event in consumer:
+        name, action = event
+        print(f"Got event from list: {event}")
+        print(f"Remains in list: {event_list}")

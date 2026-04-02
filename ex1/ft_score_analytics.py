@@ -25,7 +25,7 @@ def score_parser(scores: list) -> bool:
 
 
 def display_info_scores() -> None:
-    scores = []
+    scores: list[int] = []
     print("=== Player Score Analytics ===")
     if score_parser(scores):
         sum_score: int = sum(scores)

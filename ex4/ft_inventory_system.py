@@ -3,112 +3,61 @@ import sys
 
 def ft_inventory_system() -> None:
     argv = sys.argv[1:]
-    argc: int = len(argv)
 
+    print("=== Inventory System Analysis ===")
     inventory = {}
-
     try:
-        if argc < 1:
-            raise Exception("Error: Not enough arguments!")
-        for arg in argv:
-            if ":" not in arg:
-                raise Exception("Error: no ':' in argument")
-            data = arg.split(":")
-            if int(data[1]) < 0:
-                raise Exception("The amount can't be negative!")
-            inventory.update({str(data[0]): int(data[1])})
-    except ValueError:
-        print(
-            f"Error: either ({data[0]}) or ({data[1]}) "
-            "is not a valid argument"
-        )
-        return
+        if len(argv) < 1:
+            raise Exception("Error: Not enough arguments")
     except Exception as e:
         print(e)
         return
+    for arg in argv:
+        try:
+            if ":" not in arg:
+                raise Exception(f"Error - invalid parameter '{arg}'")
+            data = arg.split(":")
+            if len(data) != 2:
+                raise Exception(f"Error - invalid parameter '{arg}'")
+            name = data[0]
+            quantity_str = data[1]
+            if name in inventory:
+                raise Exception(f"Redundant item '{name}' - discarding")
+            try:
+                quantity = int(quantity_str)
+                inventory.update({name: quantity})
+            except ValueError:
+                print(f"Quantity error for '{name}': invalid "
+                      f"literal for int() with base 10: '{quantity_str}'")
+        except Exception as e:
+            print(e)
 
-    print("=== Inventory System Analysis ===")
+    print(f"Got inventory: {inventory}")
 
-    total_values: int = 0
-    for items, values in inventory.items():
-        total_values += values
-    print(f"Total items: {total_values}")
-    print(f"Unique item types: {argc}")
+    keys_list = list(inventory.keys())
+    print(f"Item list: {keys_list}")
 
-    print("\n=== Current Inventory ===")
+    total_values = sum(list(inventory.values()))
+    item_count = len(keys_list)
+    print(f"Total quantity of the {item_count} items: {total_values}")
 
-    itens: list = list(inventory.items())
+    for item, value in inventory.items():
+        percentage = round((value / total_values) * 100, 1)
+        print(f"Item {item} represents {percentage}%")
 
-    i: int = 0
-    while i < argc:
-        j = 0
-        while j < argc - i - 1:
-            if itens[j][1] < itens[j + 1][1]:
-                temp = itens[j]
-                itens[j] = itens[j + 1]
-                itens[j + 1] = temp
-            j += 1
-        i += 1
+    most = keys_list[0]
+    least = keys_list[0]
+    for item, value in inventory.items():
+        if value > inventory[most]:
+            most = item
+        if value < inventory[least]:
+            least = item
 
-    i = 0
-    while i < argc:
-        name = itens[i][0]
-        value = itens[i][1]
-        porcentage = (value / total_values) * 100
-        if value <= 1:
-            print(f"{name}: {value} unit ({porcentage:.1f}%)")
-        else:
-            print(f"{name}: {value} units ({porcentage:.1f}%)")
-        i += 1
+    print(f"Item most abundant: {most} with quantity {inventory[most]}")
+    print(f"Item least abundant: {least} with quantity {inventory[least]}")
 
-    print("\n=== Inventory Statistics ===")
-    least: tuple = itens[-1]
-    most: tuple = itens[0]
-    if most[1] > 1:
-        print(f"Most abundant: {most[0]} ({most[1]} units)")
-    else:
-        print(f"Most abundant: {most[0]} ({most[1]} unit)")
-    if least[1] > 1:
-        print(f"Least abundant: {least[0]} ({least[1]} units)")
-    else:
-        print(f"Least abundant: {least[0]} ({least[1]} unit)")
-
-    print("=== Item Categories ===")
-    categories: dict = {
-        "Moderate": {},
-        "Scarce": {},
-    }
-    restock_needed: list = []
-    for items, values in inventory.items():
-        if values >= 4:
-            categories["Moderate"].update({items: values})
-        else:
-            categories["Scarce"].update({items: values})
-        if values <= 1:
-            restock_needed.append(items)
-
-    moderate_items: dict = categories["Moderate"]
-    scarce_items: dict = categories["Scarce"]
-    print(f"Moderate: {moderate_items}")
-    print(f"Scarce: {scarce_items}")
-
-    print("\n=== Management Suggestions ===")
-
-    print(f"Restock needed: {', '.join(restock_needed)}")
-
-    print("\n=== Dictionary Properties Demo ===")
-
-    keys_list: list = list(inventory.keys())
-
-    print(f"Dictionary keys: {', '.join(keys_list)}")
-
-    values_list: list = []
-    for values in inventory.values():
-        values_list.append(str(values))
-
-    print(f"Dictionary values: {', '.join(values_list)}")
-    has_sword = inventory.get('sword') is not None
-    print(f"Sample lookup - 'sword' in inventory: {has_sword}")
+    inventory.update({"magic_item": 1})
+    print(f"Updated inventory: {inventory}")
 
 
 if __name__ == "__main__":
